@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+        const wss = new webSocketServer({port:8000})
+console.log('websocket server is running on ws://localhost:8000')
+
+wss.on('connection',(ws)=>{
+    ws.on('message',(message)=>{
+        console.log(`Recievd${message}`),
+        ws.send(`Server recieved:${message}`)
+    })
+
+    ws.on('close',()=>{
+        console.log("client disconnted");
+    })
+    ws.send("welcomw to the server");
+})
+    </script>
+    
+</body>
+</html>

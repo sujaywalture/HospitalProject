@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Web Socket</h1>
+
+    <script>
+        const Socket = new WebSocket('ws://localhost:8000')
+  
+        Socket.onmessage = (event) =>{
+            console.log(`Message from serevr:${event.data}`)
+
+        }
+
+        Socket.onopen = ()=>{
+            console.log("connected to the server")
+
+            Socket.send("Hello, server");
+        }
+
+        Socket.onclose = ()=>{
+            console.log("Disconnetd");
+        }
+
+            </script>
+</body>
+</html>
