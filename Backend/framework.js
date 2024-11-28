@@ -1,59 +1,112 @@
-const express = require('express')
-const bodyparser = require('body-parser')
-const cors = require('cors')
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-const Model = require('./Db.js');
-const app = express()
-app.use(bodyparser.json())
-app.use(cors())
+const { AdminSignUpModel, DoctorSignUpModel, PatientSignUpModel } = require('./Db.js'); // Destructure models from Db.js
+const app = express();
 
-app.get('/',function (req,res){ // here function (req,res) is a callbackfunction
+app.use(bodyParser.json());
+app.use(cors());
 
-Model.find().then(p=>res.send(p)).catch(err=>console.log(err))
+// Default GET route (example: fetch all doctors)
+app.get('/', function (req, res) {
+    DoctorSignUpModel.find()
+        .then(doctors => res.send(doctors))
+        .catch(err => res.status(500).send({ error: "Error fetching data", details: err.message }));
 });
 
-// app.post('/',function (req,res){
-// const data = new Model({
-// "Pasentname":req.body.Pasentname,
-// "Decise":req.body.Decise,
-// "Mobile":req.body.Mobile,
-// "HealthCareNumber":req.body.HealthCareNumber,
-// "DateofBirth":req.body.DateofBirth
+// Admin Signup
+app.post('/AdminSignUp', function (req, res) {
+    const data = new AdminSignUpModel({
+        FullName: req.body.FullName,
+        Email: req.body.Email,
+        Phone_Number: req.body.Phone_Number,
+        Password: req.body.Password,
+        Confirm_Pass: req.body.Confirm_Pass,
+    });
 
+    data.save()
+        .then(() => res.send({ message: "Admin data saved successfully" }))
+        .catch(err => res.status(500).send({ error: "Error saving admin data", details: err.message }));
+});
 
-// })
-// data.save().then(d=>res.send({"message":"Data Save Successfully"}))
-// .catch(err=>console.log(err))
-// })
+// Doctor Signup
+app.post('/DoctorSignUp', function (req, res) {
+    const data = new DoctorSignUpModel({
+        FullName: req.body.FullName,
+        Email: req.body.Email,
+        Phone_Number: req.body.Phone_Number,
+        Specialty: req.body.Specialty,
+        Password: req.body.Password,
+        Confirm_Pass: req.body.Confirm_Pass,
+    });
 
+    data.save()
+        .then(() => res.send({ message: "Doctor data saved successfully" }))
+        .catch(err => res.status(500).send({ error: "Error saving doctor data", details: err.message }));
+});
 
- 
-app.post('/',function (req,res){
-    const data = new Model({
-    "AdminName":req.body.AdminName,
-    "Mobile":req.body.Mobile,
-    "Address":req.body.Address,
-     "Password":req.body.Password
-    
-    })
-    data.save().then(d=>res.send({"message":"Data Save Successfully"}))
-    .catch(err=>console.log(err))
-    })
+// Patient Signup
+app.post('/PatientSignup', function (req, res) {
+    const data = new PatientSignUpModel({
+        FullName: req.body.FullName,
+        Email: req.body.Email,
+        Phone_Number: req.body.Phone_Number,
+        Date_of_birth: req.body.Date_of_birth,
+        Password: req.body.Password,
+        Confirm_Pass: req.body.Confirm_Pass,
+    });
 
+    data.save()
+        .then(() => res.send({ message: "Patient data saved successfully" }))
+        .catch(err => res.status(500).send({ error: "Error saving patient data", details: err.message }));
+});
 
-
-    app.post('AdminLogin/',function(res,req){
-        Model.find({"AdminName":req.body.AdminName})
-        .then(r=>{
-            if(r[0].AdminName===req.body.AdminName && r[0].Password === req.body.Password){
-                res.send({"message":"Login Successfully"})
-            }
-            else{
-                res.send({"message":"Invalid Credentials"})
+// Admin Login
+app.post('/AdminLogin', function (req, res) {
+    AdminSignUpModel.find({ Email: req.body.Email })
+        .then(admin => {
+            if (admin[0].Email === req.body.Email && admin[0].Password === req.body.Password) {
+                res.send({ message: "Login successful" });
+            } else {
+                res.send({ message: "Invalid credentials" });
             }
         })
-        .catch(a=>res.send({"message":"Admin Not Present"}))
-    })
-      
+        .catch(err => res.send({ "message": "Error during login"}));
+});
 
-app.listen(3000);
+//Patients Login
+app.post('/PatientsLogin', (req, res) => {
+    PatientSignUpModel.find({ Email: req.body.Email })
+        .then(patient => {
+            if (patient[0].Email === req.body.Email && patient[0].Password === req.body.Password) {
+                res.send({ message: "Login successful!" });
+            } else {
+                res.send({ message: "Invalid email or password." });
+            }
+        })
+        .catch(err => {
+            res.send({ "message": "Error during login."});
+        });
+});
+
+//Doctors Login
+app.post('/DoctorsLogin', (req, res) => {
+    DoctorSignUpModel.find({ Email: req.body.Email })
+        .then(doctor => {
+            if (doctor[0].Email === req.body.Email && doctor[0].Password === req.body.Password) {
+                res.send({ message: "Login successful!" });
+            } else {
+                res.send({ "message": "Invalid email or password." });
+            }
+        })
+        .catch(err => {
+            res.send({ message: "Error during login."});
+        });
+});
+
+
+// Start server
+app.listen(3000, () => {
+    console.log("Server running on http://localhost:3000");
+});

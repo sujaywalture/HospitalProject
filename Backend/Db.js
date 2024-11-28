@@ -1,29 +1,51 @@
 let mongoose = require('mongoose');
 
-mongoose.connect("mongodb://localhost:27017/studentsignup2")
+mongoose.connect("mongodb://localhost:27017/HospitalSYstem")
 .then(() => console.log("Connected to MongoDB"))
 .catch(error => console.error("MOngoDB connection reeor:",error));
-let column = new mongoose.Schema({
-"Pasentname":String,
-"Decise":String,
-"Mobile":Number,
-"HealthCareNumber":String,
-"DateofBirth":String,
+
+
+let AdminSignUpcolumn = new mongoose.Schema({
+"FullName":String,
+"Email":String,
+"Phone_Number":Number,
+"Password":String,
+"Confirm_Pass":String,
 
 });
 
-let SignUpModel = mongoose.model('SignUp',column);
+let AdminSignUpModel = mongoose.model('AdminSignUp', AdminSignUpcolumn);
 
 
-let adminCol = new mongoose.Schema({
-    "AdminName":String,
-    "Mobile":Number,
-    "Address":String,
-     "Password":String
+let DoctorSignUpcolumn = new mongoose.Schema({
+    "FullName":String,
+    "Email":String,
+    "Phone_Number":Number,
+    "Specialty":String,
+    "Password":String,
+    "Confirm_Pass":String,
     
     });
     
- let AdSignUp = mongoose.model('AdminSignUp',adminCol);
+    let DoctorSignUpModel = mongoose.model('DoctorSignUp',DoctorSignUpcolumn);
+    
+ 
+    let PatientSignUpcolumn = new mongoose.Schema({
+        "FullName":String,
+        "Email":String,
+        "Phone_Number":Number,
+        "Date_of_birth":String,
+        "Password":String,
+        "Confirm_Pass":String,
+        
+        });
+        
+        let PatientSignUpModel = mongoose.model('PatientSignUp',PatientSignUpcolumn);
 
-module.exports = SignUpModel;
-module.exports = AdSignUp;
+// Export all models
+module.exports = {
+    AdminSignUpModel,
+    DoctorSignUpModel,
+    PatientSignUpModel,
+};
+
